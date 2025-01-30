@@ -1,21 +1,34 @@
-MIT License
+Zimbolt Proprietary License (ZPL) v1.0
+Copyright © 2024 Zimbee Technologies
+All Rights Reserved.
 
-Copyright (c) 2024 StackBlitz, Inc. and bolt.diy contributors
+1. Ownership and Restrictions
+This software, including all associated source code, binaries, assets, and documentation (the "Software"), is the exclusive property of Zimbee Technologies and is protected under applicable intellectual property laws.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+You may not copy, modify, distribute, sublicense, or sell this Software without express written permission from Zimbee Technologies.
+You may not reverse-engineer, decompile, or attempt to extract source code from compiled versions of this Software.
+You may not remove or alter any proprietary notices, trademarks, or branding included in this Software.
+2. Permitted Use
+You are granted a limited, non-transferable, and revocable license to use this Software solely for approved purposes as defined by Zimbee Technologies.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Contributors: Must receive explicit approval and sign a Contributor License Agreement (CLA) before submitting any modifications.
+Commercial Use: Any commercial use requires a formal licensing agreement with Zimbee Technologies.
+API Access: The Software may rely on proprietary APIs that are governed by additional terms. Unauthorized access, use, or distribution of these APIs is strictly prohibited.
+3. Contributions & Intellectual Property
+Any contributions submitted to Zimbolt, including code, documentation, or other assets, are considered the intellectual property of Zimbee Technologies. By contributing, you agree to:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Assign full rights and ownership of your contributions to Zimbee Technologies.
+Refrain from claiming ownership or licensing rights over the Software or any derivative works.
+4. Liability and Disclaimer
+This Software is provided "AS IS" without any warranties or guarantees of functionality, security, or reliability.
+
+Zimbee Technologies is not liable for any damages, losses, or issues arising from the use of this Software.
+No warranty is provided for fitness for any particular purpose, and usage is at the user’s own risk.
+5. Enforcement and Termination
+Violation of these terms may result in immediate termination of your access to the Software. Zimbee Technologies reserves the right to take legal action against unauthorized use, reproduction, or distribution.
+
+6. Contact and Licensing Inquiries
+For commercial licenses, contributor applications, or legal inquiries, contact:
+📩 legal@zimbeecoin.com
+
+By using Zimbolt, you agree to these terms. Unauthorized use will be pursued to the fullest extent permitted by law.

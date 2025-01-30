@@ -1,91 +1,75 @@
-# Frequently Asked Questions (FAQ)
+🚀 Zimbolt Frequently Asked Questions (FAQ)
+⚡ General
+What are the best AI models for Zimbolt?
+For the best coding experience, we recommend:
 
-<details>
-<summary><strong>What are the best models for bolt.diy?</strong></summary>
+Claude 3.5 Sonnet – Best all-around model for structured code generation.
+GPT-4o – Strong competitor to Claude, excels in natural language processing and complex coding tasks.
+Gemini 1.5 Pro – High-speed model with solid performance in full-stack development.
+DeepSeek Chat V3 – Best open-source alternative for AI-assisted coding and Web3 applications.
+Qwen 2.5 Coder 32B – The best self-hosted model with reasonable hardware requirements.
+⚠️ Important: Models with less than 7B parameters struggle with advanced coding tasks. Use larger models for Web3, DeFi, and complex full-stack applications.
 
-For the best experience with bolt.diy, we recommend using the following models:
+How can I get the best results with Zimbolt?
+To maximize efficiency, follow these best practices:
 
-- **Claude 3.5 Sonnet (old)**: Best overall coder, providing excellent results across all use cases
-- **Gemini 2.0 Flash**: Exceptional speed while maintaining good performance
-- **GPT-4o**: Strong alternative to Claude 3.5 Sonnet with comparable capabilities
-- **DeepSeekCoder V2 236b**: Best open source model (available through OpenRouter, DeepSeek API, or self-hosted)
-- **Qwen 2.5 Coder 32b**: Best model for self-hosting with reasonable hardware requirements
+🔹 Specify your tech stack upfront
 
-**Note**: Models with less than 7b parameters typically lack the capability to properly interact with bolt!
-</details>
+Include relevant frameworks and languages in your prompt, such as Solidity, React, Vite, Tailwind, Hardhat, Next.js.
+This helps Zimbolt generate code tailored to your exact requirements.
+🔹 Use the "Enhance" feature
 
-<details>
-<summary><strong>How do I get the best results with bolt.diy?</strong></summary>
+Click the Enhance button before submitting your prompt.
+Zimbolt will refine your request to improve accuracy and clarity.
+🔹 Start with a basic scaffold, then expand
 
-- **Be specific about your stack**:  
-  Mention the frameworks or libraries you want to use (e.g., Astro, Tailwind, ShadCN) in your initial prompt. This ensures that bolt.diy scaffolds the project according to your preferences.
+Generate the foundational structure of your app first.
+Once the core functionality is in place, add advanced features in stages.
+🔹 Batch simple instructions
 
-- **Use the enhance prompt icon**:  
-  Before sending your prompt, click the *enhance* icon to let the AI refine your prompt. You can edit the suggested improvements before submitting.
+Instead of multiple small prompts, combine actions in one request:
+Example: “Convert this to TypeScript, add a wallet connect button, and make it mobile-responsive.”
+🛠 Zimbolt Development & Contributions
+How do I contribute to Zimbolt?
+Zimbolt is community-driven! If you’d like to contribute:
 
-- **Scaffold the basics first, then add features**:  
-  Ensure the foundational structure of your application is in place before introducing advanced functionality. This helps bolt.diy establish a solid base to build on.
+Read our Contribution Guide to get started.
+Help refine prompts, enhance AI-generated outputs, or fix bugs.
+Engage with the developer community to shape Zimbolt’s future.
+Your contributions help improve AI-powered development for Web3 and beyond! 🚀
 
-- **Batch simple instructions**:  
-  Combine simple tasks into a single prompt to save time and reduce API credit consumption. For example:  
-  *"Change the color scheme, add mobile responsiveness, and restart the dev server."*
-</details>
+What’s the roadmap for Zimbolt?
+Zimbolt is constantly evolving! Check out our official roadmap for:
 
-<details>
-<summary><strong>How do I contribute to bolt.diy?</strong></summary>
+✅ Upcoming AI model integrations
+✅ Expanded Web3 automation capabilities
+✅ UI/UX improvements & developer tools
+✅ Enhanced multi-language support
 
-Check out our [Contribution Guide](CONTRIBUTING.md) for more details on how to get involved!
-</details>
+Stay tuned for new features!
 
-<details>
-<summary><strong>What are the future plans for bolt.diy?</strong></summary>
+🔍 Troubleshooting & Common Issues
+🛑 "There was an error processing this request"
+This is a generic error. Check:
 
-Visit our [Roadmap](https://roadmap.sh/r/ottodev-roadmap-2ovzo) for the latest updates.  
-New features and improvements are on the way!
-</details>
+The terminal logs (if running via Docker or pnpm).
+The browser’s developer console (F12 → Console tab).
+🔑 "x-api-key header missing"
+Restart the Docker container or pnpm process.
+If that doesn’t work, try switching between Docker & pnpm.
+⚪ Blank preview in UI
+Open the browser’s developer console and check for errors.
+If the AI-generated code is incorrect, reset the session and retry.
+💾 "Everything works, but the output is incorrect"
+If using local models, switch to Claude 3.5 Sonnet or GPT-4o for better accuracy.
+For Web3 applications, provide detailed instructions (e.g., “Use ethers.js to sign transactions”).
+💻 Windows-Specific Errors
+Structured Exception #0xc0000005 (Access Violation)
 
-<details>
-<summary><strong>Why are there so many open issues/pull requests?</strong></summary>
+Update your Visual C++ Redistributable.
+Miniflare/Wrangler errors on Windows
 
-bolt.diy began as a small showcase project on @ColeMedin's YouTube channel to explore editing open-source projects with local LLMs. However, it quickly grew into a massive community effort!  
+Ensure you have Visual Studio C++ 14.40.33816 installed.
+More details: GitHub Issue #19.
+💬 Still have questions? Open an issue in our GitHub repo or join the discussion!
 
-We're forming a team of maintainers to manage demand and streamline issue resolution. The maintainers are rockstars, and we're also exploring partnerships to help the project thrive.
-</details>
-
-<details>
-<summary><strong>How do local LLMs compare to larger models like Claude 3.5 Sonnet for bolt.diy?</strong></summary>
-
-While local LLMs are improving rapidly, larger models like GPT-4o, Claude 3.5 Sonnet, and DeepSeek Coder V2 236b still offer the best results for complex applications. Our ongoing focus is to improve prompts, agents, and the platform to better support smaller local LLMs.
-</details>
-
-<details>
-<summary><strong>Common Errors and Troubleshooting</strong></summary>
-
-### **"There was an error processing this request"**
-This generic error message means something went wrong. Check both:
-- The terminal (if you started the app with Docker or `pnpm`).
-- The developer console in your browser (press `F12` or right-click > *Inspect*, then go to the *Console* tab).
-
-### **"x-api-key header missing"**
-This error is sometimes resolved by restarting the Docker container.  
-If that doesn't work, try switching from Docker to `pnpm` or vice versa. We're actively investigating this issue.
-
-### **Blank preview when running the app**
-A blank preview often occurs due to hallucinated bad code or incorrect commands.  
-To troubleshoot:
-- Check the developer console for errors.
-- Remember, previews are core functionality, so the app isn't broken! We're working on making these errors more transparent.
-
-### **"Everything works, but the results are bad"**
-Local LLMs like Qwen-2.5-Coder are powerful for small applications but still experimental for larger projects. For better results, consider using larger models like GPT-4o, Claude 3.5 Sonnet, or DeepSeek Coder V2 236b.
-
-### **"Received structured exception #0xc0000005: access violation"**
-If you are getting this, you are probably on Windows. The fix is generally to update the [Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
-
-### **"Miniflare or Wrangler errors in Windows"**
-You will need to make sure you have the latest version of Visual Studio C++ installed (14.40.33816), more information here https://github.com/stackblitz-labs/bolt.diy/issues/19.
-</details>
-
----
-
-Got more questions? Feel free to reach out or open an issue in our GitHub repo!
