@@ -1,6 +1,6 @@
 {
-  "name": "bolt",
-  "description": "An AI Agent",
+  "name": "zimbolt",
+  "description": "An AI-powered code editor",
   "private": true,
   "license": "MIT",
   "sideEffects": false,
@@ -9,22 +9,17 @@
   "scripts": {
     "deploy": "npm run build && wrangler pages deploy",
     "build": "remix vite:build",
-    "dev": "node pre-start.cjs  && remix vite:dev",
+    "dev": "node pre-start.cjs && remix vite:dev",
     "test": "vitest --run",
     "test:watch": "vitest",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint app",
     "lint:fix": "npm run lint -- --fix && prettier app --write",
+    "start": "node -e \"const { spawn } = require('child_process'); const isWindows = process.platform === 'win32'; const cmd = isWindows ? 'npm run start:windows' : 'npm run start:unix'; const child = spawn(cmd, { shell: true, stdio: 'inherit' }); child.on('exit', code => process.exit(code));\"",
     "start:windows": "wrangler pages dev ./build/client",
     "start:unix": "bindings=$(./bindings.sh) && wrangler pages dev ./build/client $bindings",
-    "start": "node -e \"const { spawn } = require('child_process'); const isWindows = process.platform === 'win32'; const cmd = isWindows ? 'npm run start:windows' : 'npm run start:unix'; const child = spawn(cmd, { shell: true, stdio: 'inherit' }); child.on('exit', code => process.exit(code));\"",
-    "dockerstart": "bindings=$(./bindings.sh) && wrangler pages dev ./build/client $bindings --ip 0.0.0.0 --port 5173 --no-show-interactive-dev-session",
-    "dockerrun": "docker run -it -d --name bolt-ai-live -p 5173:5173 --env-file .env.local bolt-ai",
-    "dockerbuild:prod": "docker build -t bolt-ai:production -t bolt-ai:latest --target bolt-ai-production .",
-    "dockerbuild": "docker build -t bolt-ai:development -t bolt-ai:latest --target bolt-ai-development .",
     "typecheck": "tsc",
     "typegen": "wrangler types",
-    "preview": "pnpm run build && pnpm run start",
-    "prepare": "husky"
+    "preview": "pnpm run build && pnpm run start"
   },
   "engines": {
     "node": ">=18.18.0"
@@ -117,7 +112,6 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "fast-glob": "^3.3.2",
-    "husky": "9.1.7",
     "is-ci": "^3.0.1",
     "node-fetch": "^3.3.2",
     "pnpm": "^9.14.4",

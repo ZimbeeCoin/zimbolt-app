@@ -1,4 +1,4 @@
-const { execSync } =require('child_process');
+const { execSync } = require('child_process');
 
 // Get git hash with fallback
 const getGitHash = () => {
@@ -15,12 +15,17 @@ let commitJson = {
 };
 
 console.log(`
-★═══════════════════════════════════════★
-          B O L T . D I Y
-         ⚡️  Welcome  ⚡️
-★═══════════════════════════════════════★
+╔════════════════════════════════════════╗
+║      ⚡ WELCOME TO ZIMBOLT ⚡          ║
+║    🦝 AI-Powered DeFi Developer        ║
+╠════════════════════════════════════════╣
+║  🚀 Version: v${commitJson.version}                  ║
+║  🔗 Commit: ${commitJson.hash}                  ║
+║                                        ║
+║  🌐 Deploying the future of DeFi...    ║
+║  🔄 Please wait for the URL...         ║
+╠════════════════════════════════════════╣
+║  💰 Powered by ZimbeeCoin & Zimbot 🤖  ║
+║  ⚡ Building the Web3 Revolution       ║
+╚════════════════════════════════════════╝
 `);
-console.log('📍 Current Version Tag:', `v${commitJson.version}`);
-console.log('📍 Current Commit Version:', commitJson.hash);
-console.log('  Please wait until the URL appears here');
-console.log('★═══════════════════════════════════════★');
