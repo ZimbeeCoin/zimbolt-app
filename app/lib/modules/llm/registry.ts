@@ -1,39 +1,23 @@
-import AnthropicProvider from './providers/anthropic';
-import CohereProvider from './providers/cohere';
-import DeepseekProvider from './providers/deepseek';
-import GoogleProvider from './providers/google';
-import GroqProvider from './providers/groq';
-import HuggingFaceProvider from './providers/huggingface';
-import LMStudioProvider from './providers/lmstudio';
-import MistralProvider from './providers/mistral';
-import OllamaProvider from './providers/ollama';
-import OpenRouterProvider from './providers/open-router';
-import OpenAILikeProvider from './providers/openai-like';
-import OpenAIProvider from './providers/openai';
-import PerplexityProvider from './providers/perplexity';
-import TogetherProvider from './providers/together';
-import XAIProvider from './providers/xai';
-import HyperbolicProvider from './providers/hyperbolic';
-import AmazonBedrockProvider from './providers/amazon-bedrock';
-import GithubProvider from './providers/github';
+/**
+ * This file serves as a registry for all LLM providers.
+ * It re-exports each provider's default export for easy access in other modules.
+ */
 
-export {
-  AnthropicProvider,
-  CohereProvider,
-  DeepseekProvider,
-  GoogleProvider,
-  GroqProvider,
-  HuggingFaceProvider,
-  HyperbolicProvider,
-  MistralProvider,
-  OllamaProvider,
-  OpenAIProvider,
-  OpenRouterProvider,
-  OpenAILikeProvider,
-  PerplexityProvider,
-  XAIProvider,
-  TogetherProvider,
-  LMStudioProvider,
-  AmazonBedrockProvider,
-  GithubProvider,
-};
+export { default as AmazonBedrockProvider } from './providers/amazon-bedrock';
+export { default as AnthropicProvider } from './providers/anthropic';
+export { default as CohereProvider } from './providers/cohere';
+export { default as DeepseekProvider } from './providers/deepseek';
+export { default as GithubProvider } from './providers/github';
+export { default as GoogleProvider } from './providers/google';
+export { default as GroqProvider } from './providers/groq';
+export { default as HuggingFaceProvider } from './providers/huggingface';
+export { default as HyperbolicProvider } from './providers/hyperbolic';
+export { default as LMStudioProvider } from './providers/lmstudio';
+export { default as MistralProvider } from './providers/mistral';
+export { default as OllamaProvider } from './providers/ollama';
+export { default as OpenAIProvider } from './providers/openai';
+export { default as OpenAILikeProvider } from './providers/openai-like';
+export { default as OpenRouterProvider } from './providers/open-router';
+export { default as PerplexityProvider } from './providers/perplexity';
+export { default as TogetherProvider } from './providers/together';
+export { default as XAIProvider } from './providers/xai';

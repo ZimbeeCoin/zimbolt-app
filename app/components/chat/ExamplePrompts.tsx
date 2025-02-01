@@ -1,11 +1,13 @@
 import React from 'react';
 
 const EXAMPLE_PROMPTS = [
-  { text: 'Build a todo app in React using Tailwind' },
-  { text: 'Build a simple blog using Astro' },
-  { text: 'Create a cookie consent form using Material UI' },
-  { text: 'Make a space invaders game' },
-  { text: 'Make a Tic Tac Toe game in html, css and js only' },
+  {
+    text: 'Write a Solidity smart contract for an ERC-20 token with minting, burning, and transfer functions. Use OpenZeppelin libraries for security best practices.',
+  },
+  { text: 'Develop a basic token swap interface using Web3.js and Uniswap API' },
+  { text: 'Fetch and display live cryptocurrency prices using CoinGecko API and React' },
+  { text: 'Make a space invaders game using JavaScript and Canvas API' },
+  { text: 'Make a Tic Tac Toe game in HTML, CSS, and JavaScript only' },
 ];
 
 export function ExamplePrompts(sendMessage?: { (event: React.UIEvent, messageInput?: string): void | undefined }) {
