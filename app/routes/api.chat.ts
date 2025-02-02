@@ -17,25 +17,43 @@ export async function action(args: ActionFunctionArgs) {
 
 const logger = createScopedLogger('api.chat');
 
+/**
+ * Parses a cookie header string into an object mapping cookie names to values.
+ */
 function parseCookies(cookieHeader: string): Record<string, string> {
   const cookies: Record<string, string> = {};
+  cookieHeader
+    .split(';')
+    .map((cookie) => cookie.trim())
+    .forEach((item) => {
+      const [name, ...rest] = item.split('=');
 
-  const items = cookieHeader.split(';').map((cookie) => cookie.trim());
-
-  items.forEach((item) => {
-    const [name, ...rest] = item.split('=');
-
-    if (name && rest) {
-      const decodedName = decodeURIComponent(name.trim());
-      const decodedValue = decodeURIComponent(rest.join('=').trim());
-      cookies[decodedName] = decodedValue;
-    }
-  });
+      if (name && rest.length) {
+        cookies[decodeURIComponent(name.trim())] = decodeURIComponent(rest.join('=').trim());
+      }
+    });
 
   return cookies;
 }
 
+/**
+ * Helper to update cumulative token usage.
+ */
+function updateUsage(
+  usage: { completionTokens?: number; promptTokens?: number; totalTokens?: number } | undefined,
+  cumulativeUsage: { completionTokens: number; promptTokens: number; totalTokens: number },
+): void {
+  if (!usage) {
+    return;
+  }
+
+  cumulativeUsage.completionTokens += usage.completionTokens ?? 0;
+  cumulativeUsage.promptTokens += usage.promptTokens ?? 0;
+  cumulativeUsage.totalTokens += usage.totalTokens ?? 0;
+}
+
 async function chatAction({ context, request }: ActionFunctionArgs) {
+  // Parse request JSON.
   const { messages, files, promptId, contextOptimization } = await request.json<{
     messages: Messages;
     files: any;
@@ -43,34 +61,39 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
     contextOptimization: boolean;
   }>();
 
-  const cookieHeader = request.headers.get('Cookie');
-  const apiKeys = JSON.parse(parseCookies(cookieHeader || '').apiKeys || '{}');
-  const providerSettings: Record<string, IProviderSetting> = JSON.parse(
-    parseCookies(cookieHeader || '').providers || '{}',
-  );
+  // Parse cookies once and extract apiKeys and providerSettings.
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const cookies = parseCookies(cookieHeader);
+  const apiKeys = JSON.parse(cookies.apiKeys || '{}');
+  const providerSettings: Record<string, IProviderSetting> = JSON.parse(cookies.providers || '{}');
 
+  // Create a switchable stream instance.
   const stream = new SwitchableStream();
 
+  // Initialize token usage tracking.
   const cumulativeUsage = {
     completionTokens: 0,
     promptTokens: 0,
     totalTokens: 0,
   };
-  const encoder: TextEncoder = new TextEncoder();
-  let progressCounter: number = 1;
+  const encoder = new TextEncoder();
+  let progressCounter = 1;
+  let lastChunk: string | undefined = undefined;
+
+  // Cache Cloudflare environment to avoid repeated lookups.
+  const cfEnv = context.cloudflare?.env as any;
 
   try {
     const totalMessageContent = messages.reduce((acc, message) => acc + message.content, '');
-    logger.debug(`Total message length: ${totalMessageContent.split(' ').length}, words`);
-
-    let lastChunk: string | undefined = undefined;
+    logger.debug(`Total message length: ${totalMessageContent.split(' ').length} words`);
 
     const dataStream = createDataStream({
       async execute(dataStream) {
         const filePaths = getFilePaths(files || {});
-        let filteredFiles: FileMap | undefined = undefined;
-        let summary: string | undefined = undefined;
+        let filteredFiles: FileMap | undefined;
+        let summary: string | undefined;
 
+        // If there are files and context optimization is enabled, generate a chat summary and update context.
         if (filePaths.length > 0 && contextOptimization) {
           dataStream.writeData('HI ');
           logger.debug('Generating Chat Summary');
@@ -80,33 +103,25 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             message: 'Generating Chat Summary',
           } as ProgressAnnotation);
 
-          // Create a summary of the chat
-          console.log(`Messages count: ${messages.length}`);
-
           summary = await createSummary({
             messages: [...messages],
-            env: context.cloudflare?.env,
+            env: cfEnv,
             apiKeys,
             providerSettings,
             promptId,
             contextOptimization,
             onFinish(resp) {
-              if (resp.usage) {
-                logger.debug('createSummary token usage', JSON.stringify(resp.usage));
-                cumulativeUsage.completionTokens += resp.usage.completionTokens || 0;
-                cumulativeUsage.promptTokens += resp.usage.promptTokens || 0;
-                cumulativeUsage.totalTokens += resp.usage.totalTokens || 0;
-              }
+              logger.debug('createSummary token usage', JSON.stringify(resp.usage));
+              updateUsage(resp.usage, cumulativeUsage);
             },
           });
 
           dataStream.writeMessageAnnotation({
             type: 'chatSummary',
             summary,
-            chatId: messages.slice(-1)?.[0]?.id,
+            chatId: messages.slice(-1)[0]?.id,
           } as ContextAnnotation);
 
-          // Update context buffer
           logger.debug('Updating Context Buffer');
           dataStream.writeMessageAnnotation({
             type: 'progress',
@@ -114,11 +129,9 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             message: 'Updating Context Buffer',
           } as ProgressAnnotation);
 
-          // Select context files
-          console.log(`Messages count: ${messages.length}`);
           filteredFiles = await selectContext({
             messages: [...messages],
-            env: context.cloudflare?.env,
+            env: cfEnv,
             apiKeys,
             files,
             providerSettings,
@@ -126,22 +139,18 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             contextOptimization,
             summary,
             onFinish(resp) {
-              if (resp.usage) {
-                logger.debug('selectContext token usage', JSON.stringify(resp.usage));
-                cumulativeUsage.completionTokens += resp.usage.completionTokens || 0;
-                cumulativeUsage.promptTokens += resp.usage.promptTokens || 0;
-                cumulativeUsage.totalTokens += resp.usage.totalTokens || 0;
-              }
+              logger.debug('selectContext token usage', JSON.stringify(resp.usage));
+              updateUsage(resp.usage, cumulativeUsage);
             },
           });
 
           if (filteredFiles) {
-            logger.debug(`files in context : ${JSON.stringify(Object.keys(filteredFiles))}`);
+            logger.debug(`files in context: ${JSON.stringify(Object.keys(filteredFiles))}`);
           }
 
           dataStream.writeMessageAnnotation({
             type: 'codeContext',
-            files: Object.keys(filteredFiles).map((key) => {
+            files: Object.keys(filteredFiles || {}).map((key) => {
               let path = key;
 
               if (path.startsWith(WORK_DIR)) {
@@ -160,39 +169,28 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           logger.debug('Context Buffer Updated');
         }
 
-        // Stream the text
+        // Define streaming options with an onFinish callback.
         const options: StreamingOptions = {
           toolChoice: 'none',
           onFinish: async ({ text: content, finishReason, usage }) => {
             logger.debug('usage', JSON.stringify(usage));
-
-            if (usage) {
-              cumulativeUsage.completionTokens += usage.completionTokens || 0;
-              cumulativeUsage.promptTokens += usage.promptTokens || 0;
-              cumulativeUsage.totalTokens += usage.totalTokens || 0;
-            }
+            updateUsage(usage, cumulativeUsage);
 
             if (finishReason !== 'length') {
               dataStream.writeMessageAnnotation({
                 type: 'usage',
-                value: {
-                  completionTokens: cumulativeUsage.completionTokens,
-                  promptTokens: cumulativeUsage.promptTokens,
-                  totalTokens: cumulativeUsage.totalTokens,
-                },
+                value: { ...cumulativeUsage },
               });
               await new Promise((resolve) => setTimeout(resolve, 0));
 
-              // stream.close();
               return;
             }
 
             if (stream.switches >= MAX_RESPONSE_SEGMENTS) {
-              throw Error('Cannot continue message: Maximum segments reached');
+              throw new Error('Cannot continue message: Maximum segments reached');
             }
 
             const switchesLeft = MAX_RESPONSE_SEGMENTS - stream.switches;
-
             logger.info(`Reached max token limit (${MAX_TOKENS}): Continuing message (${switchesLeft} switches left)`);
 
             messages.push({ id: generateId(), role: 'assistant', content });
@@ -200,7 +198,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
 
             const result = await streamText({
               messages,
-              env: context.cloudflare?.env,
+              env: cfEnv,
               options,
               apiKeys,
               files,
@@ -214,9 +212,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             (async () => {
               for await (const part of result.fullStream) {
                 if (part.type === 'error') {
-                  const error: any = part.error;
-                  logger.error(`${error}`);
-
+                  logger.error(`${part.error}`);
                   return;
                 }
               }
@@ -228,7 +224,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
 
         const result = await streamText({
           messages,
-          env: context.cloudflare?.env,
+          env: cfEnv,
           options,
           apiKeys,
           files,
@@ -242,9 +238,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         (async () => {
           for await (const part of result.fullStream) {
             if (part.type === 'error') {
-              const error: any = part.error;
-              logger.error(`${error}`);
-
+              logger.error(`${part.error}`);
               return;
             }
           }
@@ -254,38 +248,32 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
       onError: (error: any) => `Custom error: ${error.message}`,
     }).pipeThrough(
       new TransformStream({
-        transform: (chunk, controller) => {
+        transform(chunk, controller) {
+          const chunkStr = typeof chunk === 'string' ? chunk : JSON.stringify(chunk);
+
           if (!lastChunk) {
             lastChunk = ' ';
           }
 
-          if (typeof chunk === 'string') {
-            if (chunk.startsWith('g') && !lastChunk.startsWith('g')) {
-              controller.enqueue(encoder.encode(`0: "<div class=\\"__boltThought__\\">"\n`));
-            }
-
-            if (lastChunk.startsWith('g') && !chunk.startsWith('g')) {
-              controller.enqueue(encoder.encode(`0: "</div>\\n"\n`));
-            }
+          // Insert HTML markers based on whether the chunk starts with "g"
+          if (chunkStr.startsWith('g') && !lastChunk.startsWith('g')) {
+            controller.enqueue(encoder.encode(`0: "<div class=\\"__boltThought__\\">"\n`));
           }
 
-          lastChunk = chunk;
+          if (lastChunk.startsWith('g') && !chunkStr.startsWith('g')) {
+            controller.enqueue(encoder.encode(`0: "</div>\\n"\n`));
+          }
 
-          let transformedChunk = chunk;
+          lastChunk = chunkStr;
 
-          if (typeof chunk === 'string' && chunk.startsWith('g')) {
-            let content = chunk.split(':').slice(1).join(':');
+          let transformedChunk = chunkStr;
 
-            if (content.endsWith('\n')) {
-              content = content.slice(0, content.length - 1);
-            }
-
+          if (chunkStr.startsWith('g')) {
+            const content = chunkStr.split(':').slice(1).join(':').trimEnd();
             transformedChunk = `0:${content}\n`;
           }
 
-          // Convert the string stream to a byte stream
-          const str = typeof transformedChunk === 'string' ? transformedChunk : JSON.stringify(transformedChunk);
-          controller.enqueue(encoder.encode(str));
+          controller.enqueue(encoder.encode(transformedChunk));
         },
       }),
     );

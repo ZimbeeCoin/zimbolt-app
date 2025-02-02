@@ -74,7 +74,7 @@ export const Head = createHead(() => (
   <>
     <meta charSet="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Zimbolt ⚡ AI-Powered DeFi Developer</title>
+    <title>Zimbolt ⚡ AI-Powered Developer</title>
     <meta
       name="description"
       content="Zimbolt is the ultimate AI-powered DeFi development platform, integrated with ZimbeeCoin 🦝 and Zimbot 🤖. Build, automate, and deploy Web3 solutions with ease."

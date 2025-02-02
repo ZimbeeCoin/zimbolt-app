@@ -4,10 +4,10 @@ const EXAMPLE_PROMPTS = [
   {
     text: 'Write a Solidity smart contract for an ERC-20 token with minting, burning, and transfer functions. Use OpenZeppelin libraries for security best practices.',
   },
-  { text: 'Develop a basic token swap interface using Web3.js and Uniswap API' },
-  { text: 'Fetch and display live cryptocurrency prices using CoinGecko API and React' },
-  { text: 'Make a space invaders game using JavaScript and Canvas API' },
-  { text: 'Make a Tic Tac Toe game in HTML, CSS, and JavaScript only' },
+  { text: 'Create a modern themed token swap interface using Web3.js and Uniswap API' },
+  { text: 'Create a neo-brutalist live cryptocurrency price app using CoinGecko API and React.' },
+  { text: 'create a space invaders game that fully emulates the classic arcade' },
+  { text: 'Create a neon themed Tic Tac Toe game in HTML, CSS, and JavaScript' },
 ];
 
 export function ExamplePrompts(sendMessage?: { (event: React.UIEvent, messageInput?: string): void | undefined }) {
