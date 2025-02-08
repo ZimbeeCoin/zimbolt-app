@@ -2,12 +2,20 @@ import React from 'react';
 
 const EXAMPLE_PROMPTS = [
   {
-    text: 'Write a Solidity smart contract for an ERC-20 token with minting, burning, and transfer functions. Use OpenZeppelin libraries for security best practices.',
+    text: 'Build a Vite, React, and TypeScript dashboard that loads Coingecko data and renders interactive charts using TradingView Lightweight Charts—no external API keys required.',
   },
-  { text: 'Develop a basic token swap interface using Web3.js and Uniswap API' },
-  { text: 'Fetch and display live cryptocurrency prices using CoinGecko API and React' },
-  { text: 'Make a space invaders game using JavaScript and Canvas API' },
-  { text: 'Make a Tic Tac Toe game in HTML, CSS, and JavaScript only' },
+  {
+    text: 'Create a Vite, React, and TypeScript to-do-list app with Tailwind CSS, in a neo brutalist theme, that lets users add, update, and delete tasks stored locally.',
+  },
+  {
+    text: 'Develop a weather app using Vite, React, and TypeScript with Tailwind CSS that displays local weather data using an external API for current conditions and forecasts.',
+  },
+  {
+    text: 'Develop a real-time chat interface that resembles Discord using Vite, React, and TypeScript with Tailwind CSS and Socket.IO to simulate message exchanges without external APIs.',
+  },
+  {
+    text: 'Create a neon Tic Tac Toe game using Vite, React, and TypeScript with Tailwind CSS, focusing on clean component architecture and responsive design.',
+  },
 ];
 
 export function ExamplePrompts(sendMessage?: { (event: React.UIEvent, messageInput?: string): void | undefined }) {
