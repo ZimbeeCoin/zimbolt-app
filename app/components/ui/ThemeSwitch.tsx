@@ -15,13 +15,21 @@ export const ThemeSwitch = memo(({ className }: ThemeSwitchProps) => {
     setDomLoaded(true);
   }, []);
 
+  // Swapped icons: dark theme now shows a moon and light theme shows a sun.
+  const iconName =
+    theme === 'dark'
+      ? 'i-ph-moon-stars-duotone'
+      : theme === 'light'
+        ? 'i-ph-sun-dim-duotone'
+        : 'i-ph-lightbulb-filament'; // Neon theme icon
+
   return (
     domLoaded && (
       <IconButton
         className={className}
-        icon={theme === 'dark' ? 'i-ph-sun-dim-duotone' : 'i-ph-moon-stars-duotone'}
+        icon={iconName}
         size="xl"
-        title="Toggle Theme"
+        title={`Toggle Theme (current: ${theme})`}
         onClick={toggleTheme}
       />
     )

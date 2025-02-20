@@ -1,4 +1,6 @@
 import { memo, forwardRef, type ForwardedRef } from 'react';
+import { useStore } from '@nanostores/react';
+import { themeStore } from '~/lib/stores/theme';
 import { classNames } from '~/utils/classNames';
 
 type IconSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
@@ -25,7 +27,6 @@ type IconButtonWithChildrenProps = {
 
 type IconButtonProps = IconButtonWithoutChildrenProps | IconButtonWithChildrenProps;
 
-// Componente IconButton com suporte a refs
 export const IconButton = memo(
   forwardRef(
     (
@@ -42,14 +43,18 @@ export const IconButton = memo(
       }: IconButtonProps,
       ref: ForwardedRef<HTMLButtonElement>,
     ) => {
+      // Get the current theme from the nanostores theme store
+      const theme = useStore(themeStore);
+
       return (
         <button
           ref={ref}
           className={classNames(
             'flex items-center text-bolt-elements-item-contentDefault bg-transparent enabled:hover:text-bolt-elements-item-contentActive rounded-md p-1 enabled:hover:bg-bolt-elements-item-backgroundActive disabled:cursor-not-allowed',
-            {
-              [classNames('opacity-30', disabledClassName)]: disabled,
-            },
+
+            // Use a ternary to ensure a string is always returned
+            theme === 'neon' ? 'button-neon-glow' : '',
+            { [classNames('opacity-30', disabledClassName)]: disabled },
             className,
           )}
           title={title}

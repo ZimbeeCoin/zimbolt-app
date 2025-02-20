@@ -1,49 +1,118 @@
+/*
+  animations.scss
+  Includes base fade/slide animations and neon glow effects.
+  These animations are used to enhance interactive UI components in Zimbolt.
+  Note: Apply neon animations selectively to avoid performance issues on lower-end devices.
+*/
+
+/* ------------------ */
+/* Base Animations    */
+/* ------------------ */
+
+/*
+  Utility class for general animations.
+  Sets default animation properties which can be extended with additional classes.
+*/
 .animated {
   animation-fill-mode: both;
   animation-duration: var(--animate-duration, 0.2s);
   animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
 
+  /* Fade in/out animations for rightward motion */
   &.fadeInRight {
     animation-name: fadeInRight;
   }
-
   &.fadeOutRight {
     animation-name: fadeOutRight;
   }
 }
 
+/* Keyframes for fade in from right */
 @keyframes fadeInRight {
   from {
     opacity: 0;
     transform: translate3d(100%, 0, 0);
   }
-
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
 }
 
+/* Keyframes for fade out to right */
 @keyframes fadeOutRight {
   from {
     opacity: 1;
   }
-
   to {
     opacity: 0;
     transform: translate3d(100%, 0, 0);
   }
 }
 
+/* ------------------ */
+/* Dropdown Animation */
+/* ------------------ */
+
+/*
+  Applies a subtle fade and downward movement for dropdowns.
+*/
 .dropdown-animation {
   opacity: 0;
   animation: fadeMoveDown 0.15s forwards;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Keyframes for dropdown fade and move down */
 @keyframes fadeMoveDown {
   to {
     opacity: 1;
     transform: translateY(6px);
+  }
+}
+
+/* --------------------------- */
+/* Neon Glow Animations        */
+/* --------------------------- */
+/*
+  Neon Glow Animations:
+  Designed for the neon theme to add a subtle pulsing glow effect.
+  These effects are intended to visually enhance interactive elements.
+  Consider applying these classes conditionally based on the active theme.
+*/
+
+/* Neon Pulse Keyframes (creates a pulsing glow effect) */
+@keyframes neonPulse {
+  0%, 100% {
+    /* Fixed neon glow colors; consider using CSS variables if further customization is needed */
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5),
+                0 0 12px rgba(0, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(0, 255, 255, 1),
+                0 0 16px rgba(0, 255, 255, 0.5);
+  }
+}
+
+/* Utility class to apply a continuous neon glow effect */
+.neon-glow {
+  animation: neonPulse 2s infinite ease-in-out;
+}
+
+/* Button style with Neon Glow on hover */
+.button-neon-glow {
+  position: relative;
+  background-color: var(--bolt-elements-button-primary-background);
+  color: var(--bolt-elements-button-primary-text);
+  border: 1px solid var(--bolt-elements-borderColorActive);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    /* Intensify neon pulse on hover for a more pronounced effect */
+    animation: neonPulse 1.5s infinite ease-in-out;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }

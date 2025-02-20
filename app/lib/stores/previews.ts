@@ -129,7 +129,6 @@ export class PreviewsStore {
           storage[key] = localStorage.getItem(key) || '';
         }
       }
-
       this.#storageChannel.postMessage({
         type: 'storage-sync',
         storage,
@@ -155,8 +154,8 @@ export class PreviewsStore {
       // Watch for file changes
       const watcher = await webcontainer.fs.watch('**/*', { persistent: true });
 
-      // Use the native watch events
-      (watcher as any).addEventListener('change', async () => {
+      // Use Node.js event emitter to listen for changes
+      (watcher as any).on('change', async () => {
         const previews = this.previews.get();
 
         for (const preview of previews) {
@@ -174,7 +173,6 @@ export class PreviewsStore {
           // Broadcast storage changes when DOM changes
           this._broadcastStorageSync();
         });
-
         observer.observe(document.body, {
           childList: true,
           subtree: true,
@@ -182,8 +180,12 @@ export class PreviewsStore {
           attributes: true,
         });
       }
-    } catch (error) {
-      console.error('[Preview] Error setting up watchers:', error);
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        console.warn('[Preview] Watcher error: Directory not found. No files to watch.');
+      } else {
+        console.error('[Preview] Error setting up watchers:', error);
+      }
     }
 
     // Listen for port events
@@ -207,7 +209,6 @@ export class PreviewsStore {
 
       previewInfo.ready = type === 'open';
       previewInfo.baseUrl = url;
-
       this.previews.set([...previews]);
 
       if (type === 'open') {
@@ -226,7 +227,6 @@ export class PreviewsStore {
   broadcastStateChange(previewId: string) {
     const timestamp = Date.now();
     this.#lastUpdate.set(previewId, timestamp);
-
     this.#broadcastChannel.postMessage({
       type: 'state-change',
       previewId,
@@ -238,7 +238,6 @@ export class PreviewsStore {
   broadcastFileChange(previewId: string) {
     const timestamp = Date.now();
     this.#lastUpdate.set(previewId, timestamp);
-
     this.#broadcastChannel.postMessage({
       type: 'file-change',
       previewId,
@@ -253,7 +252,6 @@ export class PreviewsStore {
     if (previewId) {
       const timestamp = Date.now();
       this.#lastUpdate.set(previewId, timestamp);
-
       this.#broadcastChannel.postMessage({
         type: 'file-change',
         previewId,
@@ -279,7 +277,6 @@ export class PreviewsStore {
       if (preview) {
         preview.ready = false;
         this.previews.set([...previews]);
-
         requestAnimationFrame(() => {
           preview.ready = true;
           this.previews.set([...previews]);
@@ -288,7 +285,6 @@ export class PreviewsStore {
 
       this.#refreshTimeouts.delete(previewId);
     }, this.#REFRESH_DELAY);
-
     this.#refreshTimeouts.set(previewId, timeout);
   }
 }
@@ -299,8 +295,8 @@ let previewsStore: PreviewsStore | null = null;
 export function usePreviewStore() {
   if (!previewsStore) {
     /*
-     * Initialize with a Promise that resolves to WebContainer
-     * This should match how you're initializing WebContainer elsewhere
+     * Initialize with a Promise that resolves to WebContainer.
+     * This should match how you're initializing WebContainer elsewhere.
      */
     previewsStore = new PreviewsStore(Promise.resolve({} as WebContainer));
   }
