@@ -24,6 +24,11 @@ export const SettingsWindow = ({ open, onClose }: SettingsProps) => {
   const { debug, eventLogs } = useSettings();
   const [activeTab, setActiveTab] = useState<TabType>('data');
 
+  /*
+   * Define tabs along with their labels, icons, and associated components.
+   * Neon theme tokens are already applied through the CSS classes (e.g., bg-bolt-elements-background-depth-1)
+   * so when the <html> element has data-theme="neon", the neon styling will take effect.
+   */
   const tabs: { id: TabType; label: string; icon: string; component?: ReactElement }[] = [
     { id: 'data', label: 'Data', icon: 'i-ph:database', component: <DataTab /> },
     { id: 'providers', label: 'Providers', icon: 'i-ph:key', component: <ProvidersTab /> },
@@ -72,6 +77,7 @@ export const SettingsWindow = ({ open, onClose }: SettingsProps) => {
             variants={dialogVariants}
           >
             <div className="flex h-full">
+              {/* Sidebar with tab navigation */}
               <div
                 className={classNames(
                   'w-48 border-r border-bolt-elements-borderColor bg-bolt-elements-background-depth-1 p-4 flex flex-col justify-between',
@@ -113,10 +119,12 @@ export const SettingsWindow = ({ open, onClose }: SettingsProps) => {
                 </div>
               </div>
 
+              {/* Main content area for active tab */}
               <div className="flex-1 flex flex-col p-8 pt-10 bg-bolt-elements-background-depth-2">
                 <div className="flex-1 overflow-y-auto">{tabs.find((tab) => tab.id === activeTab)?.component}</div>
               </div>
             </div>
+            {/* Close button */}
             <RadixDialog.Close asChild onClick={onClose}>
               <IconButton icon="i-ph:x" className="absolute top-[10px] right-[10px]" />
             </RadixDialog.Close>
