@@ -1,4 +1,12 @@
 import { useStore } from '@nanostores/react';
+import { useCallback, useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import type { IProviderSetting, ProviderInfo } from '~/types/model';
+import { logStore } from '~/lib/stores/logs';
+
+// Import theme-related functionality; note that we no longer import the unused 'Theme'
+import { themeStore, toggleTheme } from '~/lib/stores/theme';
+
 import {
   isDebugMode,
   isEventLogsEnabled,
@@ -10,10 +18,6 @@ import {
   autoSelectStarterTemplate,
   enableContextOptimizationStore,
 } from '~/lib/stores/settings';
-import { useCallback, useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import type { IProviderSetting, ProviderInfo } from '~/types/model';
-import { logStore } from '~/lib/stores/logs'; // assuming logStore is imported from this location
 
 interface CommitData {
   commit: string;
@@ -33,10 +37,14 @@ export function useSettings() {
   const isLocalModel = useStore(isLocalModelsEnabled);
   const isLatestBranch = useStore(latestBranchStore);
   const autoSelectTemplate = useStore(autoSelectStarterTemplate);
-  const [activeProviders, setActiveProviders] = useState<ProviderInfo[]>([]);
   const contextOptimizationEnabled = useStore(enableContextOptimizationStore);
 
-  // Function to check if we're on stable version
+  // Retrieve the current theme from the theme store.
+  const theme = useStore(themeStore);
+
+  const [activeProviders, setActiveProviders] = useState<ProviderInfo[]>([]);
+
+  // Function to check if we're on a stable version
   const checkIsStableVersion = async () => {
     try {
       const response = await fetch(
@@ -51,7 +59,7 @@ export function useSettings() {
     }
   };
 
-  // reading values from cookies on mount
+  // Reading values from cookies on mount
   useEffect(() => {
     const savedProviders = Cookies.get('providers');
 
@@ -76,34 +84,34 @@ export function useSettings() {
       }
     }
 
-    // load debug mode from cookies
+    // Load debug mode from cookies
     const savedDebugMode = Cookies.get('isDebugEnabled');
 
     if (savedDebugMode) {
       isDebugMode.set(savedDebugMode === 'true');
     }
 
-    // load event logs from cookies
+    // Load event logs from cookies
     const savedEventLogs = Cookies.get('isEventLogsEnabled');
 
     if (savedEventLogs) {
       isEventLogsEnabled.set(savedEventLogs === 'true');
     }
 
-    // load local models from cookies
+    // Load local models from cookies
     const savedLocalModels = Cookies.get('isLocalModelsEnabled');
 
     if (savedLocalModels) {
       isLocalModelsEnabled.set(savedLocalModels === 'true');
     }
 
-    const promptId = Cookies.get('promptId');
+    const promptIdCookie = Cookies.get('promptId');
 
-    if (promptId) {
-      promptStore.set(promptId);
+    if (promptIdCookie) {
+      promptStore.set(promptIdCookie);
     }
 
-    // load latest branch setting from cookies or determine based on version
+    // Load latest branch setting from cookies or determine based on version
     const savedLatestBranch = Cookies.get('isLatestBranch');
     let checkCommit = Cookies.get('commitHash');
 
@@ -123,10 +131,10 @@ export function useSettings() {
       latestBranchStore.set(savedLatestBranch === 'true');
     }
 
-    const autoSelectTemplate = Cookies.get('autoSelectTemplate');
+    const autoSelectTemplateCookie = Cookies.get('autoSelectTemplate');
 
-    if (autoSelectTemplate) {
-      autoSelectStarterTemplate.set(autoSelectTemplate === 'true');
+    if (autoSelectTemplateCookie) {
+      autoSelectStarterTemplate.set(autoSelectTemplateCookie === 'true');
     }
 
     const savedContextOptimizationEnabled = Cookies.get('contextOptimizationEnabled');
@@ -136,12 +144,12 @@ export function useSettings() {
     }
   }, []);
 
-  // writing values to cookies on change
+  // Writing values to cookies on change
   useEffect(() => {
-    const providers = providersStore.get();
+    const currentProviders = providersStore.get();
     const providerSetting: Record<string, IProviderSetting> = {};
-    Object.keys(providers).forEach((provider) => {
-      providerSetting[provider] = providers[provider].settings;
+    Object.keys(currentProviders).forEach((provider) => {
+      providerSetting[provider] = currentProviders[provider].settings;
     });
     Cookies.set('providers', JSON.stringify(providerSetting));
   }, [providers]);
@@ -158,7 +166,7 @@ export function useSettings() {
     setActiveProviders(active);
   }, [providers, isLocalModel]);
 
-  // helper function to update settings
+  // Helper function to update provider settings
   const updateProviderSettings = useCallback(
     (provider: string, config: IProviderSetting) => {
       const settings = providers[provider].settings;
@@ -189,6 +197,7 @@ export function useSettings() {
     promptStore.set(promptId);
     Cookies.set('promptId', promptId);
   }, []);
+
   const enableLatestBranch = useCallback((enabled: boolean) => {
     latestBranchStore.set(enabled);
     logStore.logSystem(`Main branch updates ${enabled ? 'enabled' : 'disabled'}`);
@@ -225,5 +234,9 @@ export function useSettings() {
     setAutoSelectTemplate,
     contextOptimizationEnabled,
     enableContextOptimization,
+
+    // Expose theme state and toggle functionality so components can access theme info
+    theme,
+    toggleTheme,
   };
 }

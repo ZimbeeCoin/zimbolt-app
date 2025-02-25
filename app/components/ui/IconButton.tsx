@@ -1,4 +1,4 @@
-import { memo, forwardRef, type ForwardedRef } from 'react';
+import { memo, forwardRef, type ForwardedRef, useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { themeStore } from '~/lib/stores/theme';
 import { classNames } from '~/utils/classNames';
@@ -46,14 +46,21 @@ export const IconButton = memo(
       // Get the current theme from the nanostores theme store
       const theme = useStore(themeStore);
 
+      // Use a mounted flag to ensure client-only class is applied after mount
+      const [mounted, setMounted] = useState(false);
+      useEffect(() => {
+        setMounted(true);
+      }, []);
+
+      const themeClass = mounted && theme === 'neon' ? 'button-neon-glow' : '';
+
       return (
         <button
           ref={ref}
+          suppressHydrationWarning
           className={classNames(
             'flex items-center text-bolt-elements-item-contentDefault bg-transparent enabled:hover:text-bolt-elements-item-contentActive rounded-md p-1 enabled:hover:bg-bolt-elements-item-backgroundActive disabled:cursor-not-allowed',
-
-            // Use a ternary to ensure a string is always returned
-            theme === 'neon' ? 'button-neon-glow' : '',
+            themeClass,
             { [classNames('opacity-30', disabledClassName)]: disabled },
             className,
           )}
@@ -67,7 +74,7 @@ export const IconButton = memo(
             onClick?.(event);
           }}
         >
-          {children ? children : <div className={classNames(icon, getIconSize(size), iconClassName)}></div>}
+          {children ? children : <div className={classNames(icon, getIconSize(size), iconClassName)} />}
         </button>
       );
     },

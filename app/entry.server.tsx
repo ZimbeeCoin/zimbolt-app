@@ -13,8 +13,7 @@ export default async function handleRequest(
   remixContext: any,
   _loadContext: AppLoadContext,
 ) {
-  // await initializeModelList({});
-
+  // Render the application to a stream.
   const readable = await renderToReadableStream(<RemixServer context={remixContext} url={request.url} />, {
     signal: request.signal,
     onError(error: unknown) {
@@ -23,53 +22,53 @@ export default async function handleRequest(
     },
   });
 
+  // Precompute head markup and cache static header/footer portions.
+  const headMarkup = renderHeadToString({ request, remixContext, Head });
+  const staticHeader = `<!DOCTYPE html><html lang="en" data-theme="${themeStore.value}"><head>${headMarkup}</head><body><div id="root" class="w-full h-full">`;
+  const staticFooter = '</div></body></html>';
+  const encoder = new TextEncoder();
+
   const body = new ReadableStream({
-    start(controller) {
-      const head = renderHeadToString({ request, remixContext, Head });
+    async start(controller) {
+      // Enqueue static header.
+      controller.enqueue(encoder.encode(staticHeader));
 
-      controller.enqueue(
-        new Uint8Array(
-          new TextEncoder().encode(
-            `<!DOCTYPE html><html lang="en" data-theme="${themeStore.value}"><head>${head}</head><body><div id="root" class="w-full h-full">`,
-          ),
-        ),
-      );
-
+      // Stream the rendered content.
       const reader = readable.getReader();
 
-      function read() {
-        reader
-          .read()
-          .then(({ done, value }) => {
-            if (done) {
-              controller.enqueue(new Uint8Array(new TextEncoder().encode('</div></body></html>')));
-              controller.close();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
 
-              return;
-            }
+          if (done) {
+            break;
+          }
 
-            controller.enqueue(value);
-            read();
-          })
-          .catch((error) => {
-            controller.error(error);
-            readable.cancel();
-          });
+          controller.enqueue(value);
+        }
+      } catch (error) {
+        console.error(error);
+        controller.error(error);
+        readable.cancel();
+
+        return;
       }
-      read();
-    },
 
+      // Enqueue static footer and close the stream.
+      controller.enqueue(encoder.encode(staticFooter));
+      controller.close();
+    },
     cancel() {
       readable.cancel();
     },
   });
 
+  // If the request comes from a bot, wait for the stream to be ready.
   if (isbot(request.headers.get('user-agent') || '')) {
     await readable.allReady;
   }
 
   responseHeaders.set('Content-Type', 'text/html');
-
   responseHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp');
   responseHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
 

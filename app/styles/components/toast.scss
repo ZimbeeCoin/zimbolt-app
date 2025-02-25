@@ -1,17 +1,33 @@
+/*
+  app/styles/components/toast.scss
+  Styles specific to toast notifications in Zimbolt.
+*/
+
 .Toastify__toast {
   --at-apply: shadow-md;
 
-  background-color: var(--bolt-elements-bg-depth-2);
-  color: var(--bolt-elements-textPrimary);
-  border: 1px solid var(--bolt-elements-borderColor);
+  background-color: var(--bolt-elements-bg-depth-2); /* warmGray.100 for soft secondary bg */
+  color: var(--bolt-elements-textPrimary); /* gray.800 for clear, softer text */
+  border: 1px solid var(--bolt-elements-borderColor); /* warmGray.100 for light border */
+  border-radius: 6px; /* Subtle rounding for a modern feel */
 }
 
+/* Close button styling */
 .Toastify__close-button {
-  color: var(--bolt-elements-item-contentDefault);
+  color: var(--bolt-elements-item-contentDefault); /* warmGray.500 for default state */
   opacity: 1;
-  transition: none;
+  transition: color 0.2s ease-in-out; /* Smooth transition for hover */
 
   &:hover {
-    color: var(--bolt-elements-item-contentActive);
+    color: var(--bolt-elements-item-contentAccent); /* teal.600 for engaging hover */
   }
+}
+
+/* Optional: Success and error variants for better distinction */
+.Toastify__toast--success {
+  border-left: 4px solid var(--bolt-elements-icon-success); /* green.500 */
+}
+
+.Toastify__toast--error {
+  border-left: 4px solid var(--bolt-elements-icon-error); /* red.500 */
 }

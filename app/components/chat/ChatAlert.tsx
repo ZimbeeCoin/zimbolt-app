@@ -9,6 +9,8 @@ interface Props {
 }
 
 export default function ChatAlert({ alert, clearAlert, postMessage }: Props) {
+  console.log('ChatAlert render start');
+
   const { description, content, source } = alert;
 
   const isPreview = source === 'preview';
@@ -16,6 +18,8 @@ export default function ChatAlert({ alert, clearAlert, postMessage }: Props) {
   const message = isPreview
     ? 'We encountered an error while running the preview. Would you like Bolt to analyze and help resolve this issue?'
     : 'We encountered an error while running terminal commands. Would you like Bolt to analyze and help resolve this issue?';
+
+  console.log('ChatAlert render complete');
 
   return (
     <AnimatePresence>

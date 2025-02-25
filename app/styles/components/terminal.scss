@@ -1,3 +1,26 @@
+/*
+  app/styles/components/terminal.scss
+  Styles specific to the terminal component in Zimbolt.
+*/
+
 .xterm {
-  padding: 1rem;
+  padding: 1.25rem; /* Slightly increased from 1rem for more breathing room */
+  background-color: var(--bolt-elements-terminal-backgroundColor); /* Uses updated light theme bg */
+  color: var(--bolt-elements-terminal-textColor); /* Updated softer text color */
+  border-radius: 8px; /* Subtle rounding for a modern touch */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+}
+
+/* Ensure terminal-specific colors are applied */
+.xterm .terminal {
+  background-color: var(--bolt-terminal-background); /* Consistent with light theme */
+}
+
+/* Optional: Adjust cursor and selection for better visibility */
+.xterm .xterm-cursor {
+  background-color: var(--bolt-elements-terminal-cursorColor);
+}
+
+.xterm .xterm-selection {
+  background-color: var(--bolt-elements-terminal-selection-backgroundColor);
 }

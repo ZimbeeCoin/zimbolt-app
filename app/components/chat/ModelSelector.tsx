@@ -22,9 +22,12 @@ export const ModelSelector = ({
   providerList,
   modelLoading,
 }: ModelSelectorProps) => {
-  // Load enabled providers from cookies
+  console.log('ModelSelector render start');
+
+  // Load enabled providers from cookies (comment preserved, no logic to log)
 
   // Update enabled providers when cookies change
+  console.log('Before useEffect');
   useEffect(() => {
     // If current provider is disabled, switch to first enabled provider
     if (providerList.length == 0) {
@@ -43,8 +46,10 @@ export const ModelSelector = ({
       }
     }
   }, [providerList, provider, setProvider, modelList, setModel]);
+  console.log('After useEffect');
 
   if (providerList.length === 0) {
+    console.log('ModelSelector early return: no providers');
     return (
       <div className="mb-2 p-4 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary">
         <p className="text-center">
@@ -54,6 +59,8 @@ export const ModelSelector = ({
       </div>
     );
   }
+
+  console.log('ModelSelector render complete');
 
   return (
     <div className="mb-2 flex gap-2 flex-col sm:flex-row">

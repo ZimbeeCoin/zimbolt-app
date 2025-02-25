@@ -1,13 +1,12 @@
+/*
+ * @ts-nocheck
+ * Preventing TS checks with files presented in the video for a better presentation.
+ */
 import type { Message } from 'ai';
 import React, { Fragment } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
-import { useLocation } from '@remix-run/react';
-import { db, chatId } from '~/lib/persistence/useChatHistory';
-import { forkChat } from '~/lib/persistence/db';
-import { toast } from 'react-toastify';
-import WithTooltip from '~/components/ui/Tooltip';
 
 interface MessagesProps {
   id?: string;
@@ -17,34 +16,25 @@ interface MessagesProps {
 }
 
 export const Messages = React.forwardRef<HTMLDivElement, MessagesProps>((props: MessagesProps, ref) => {
-  const { id, isStreaming = false, messages = [] } = props;
-  const location = useLocation();
+  console.log('Messages render start');
 
-  const handleRewind = (messageId: string) => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('rewindTo', messageId);
-    window.location.search = searchParams.toString();
-  };
+  const { id, isStreaming = false, messages = [], className } = props;
 
-  const handleFork = async (messageId: string) => {
-    try {
-      if (!db || !chatId.get()) {
-        toast.error('Chat persistence is not available');
-        return;
-      }
+  // Manual hydration check instead of useHydrated
+  const isHydrated = typeof window !== 'undefined';
 
-      const urlId = await forkChat(db, chatId.get()!, messageId);
-      window.location.href = `/chat/${urlId}`;
-    } catch (error) {
-      toast.error('Failed to fork chat: ' + (error as Error).message);
-    }
-  };
+  if (!isHydrated) {
+    console.log('Messages: Not hydrated yet, skipping render');
+    return null; // Prevent hooks from running during SSR
+  }
+
+  console.log('Messages render complete');
 
   return (
-    <div id={id} ref={ref} className={props.className}>
+    <div id={id} ref={ref} className={className}>
       {messages.length > 0
         ? messages.map((message, index) => {
-            const { role, content, id: messageId, annotations } = message;
+            const { role, content, annotations } = message; // Removed unused messageId
             const isUserMessage = role === 'user';
             const isFirst = index === 0;
             const isLast = index === messages.length - 1;
@@ -76,33 +66,6 @@ export const Messages = React.forwardRef<HTMLDivElement, MessagesProps>((props: 
                     <AssistantMessage content={content} annotations={message.annotations} />
                   )}
                 </div>
-                {!isUserMessage && (
-                  <div className="flex gap-2 flex-col lg:flex-row">
-                    {messageId && (
-                      <WithTooltip tooltip="Revert to this message">
-                        <button
-                          onClick={() => handleRewind(messageId)}
-                          key="i-ph:arrow-u-up-left"
-                          className={classNames(
-                            'i-ph:arrow-u-up-left',
-                            'text-xl text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary transition-colors',
-                          )}
-                        />
-                      </WithTooltip>
-                    )}
-
-                    <WithTooltip tooltip="Fork chat from this message">
-                      <button
-                        onClick={() => handleFork(messageId)}
-                        key="i-ph:git-fork"
-                        className={classNames(
-                          'i-ph:git-fork',
-                          'text-xl text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary transition-colors',
-                        )}
-                      />
-                    </WithTooltip>
-                  </div>
-                )}
               </div>
             );
           })

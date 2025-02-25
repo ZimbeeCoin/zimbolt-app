@@ -1,6 +1,6 @@
-/* index.scss */
-
 /*
+  index.scss
+
   Central SCSS file for Zimbolt.
   This file imports all necessary SCSS partials in the proper order:
   1. Variables – defines Light, Dark, and Neon theme tokens.
@@ -24,6 +24,12 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
+  background: linear-gradient(
+    135deg,
+    var(--bolt-elements-bg-depth-1) 0%,
+    var(--bolt-elements-bg-depth-2) 100%
+  ); /* Subtle gradient for depth */
+  color: var(--bolt-elements-textPrimary); /* Applies updated text color */
 }
 
 /*
@@ -33,21 +39,21 @@ body {
   data-theme attribute is set to "neon", thanks to the tokens defined in variables.scss.
 */
 :root {
-  --gradient-opacity: 0.8;
-  --primary-color: rgba(158, 117, 240, var(--gradient-opacity));
-  --secondary-color: rgba(138, 43, 226, var(--gradient-opacity));
-  --accent-color: rgba(128, 59, 239, var(--gradient-opacity));
+  --gradient-opacity: 0.7; /* Slightly reduced for a softer effect */
+  --primary-color: rgba(178, 245, 234, var(--gradient-opacity)); /* Pastel teal, matches teal.100 */
+  --secondary-color: rgba(237, 242, 247, var(--gradient-opacity)); /* Warm gray, aligns with warmGray.100 */
+  --accent-color: rgba(129, 230, 217, var(--gradient-opacity)); /* Softer teal, aligns with teal.500 */
 
   /*
     // Alternative gradient configuration (uncomment to experiment):
-    --primary-color: rgba(147, 112, 219, var(--gradient-opacity));
-    --secondary-color: rgba(138, 43, 226, var(--gradient-opacity));
-    --accent-color: rgba(180, 170, 220, var(--gradient-opacity));
+    --primary-color: rgba(204, 251, 241, var(--gradient-opacity)); // Lighter teal
+    --secondary-color: rgba(243, 244, 246, var(--gradient-opacity)); // Lighter warm gray
+    --accent-color: rgba(110, 231, 183, var(--gradient-opacity)); // Slightly greener teal
   */
 }
 
 /*
   Additional global styles or resets can be added here if needed.
   This file serves as the glue that brings together all the partials,
-  ensuring that the neon theme tokens and animations are available throughout Zimbolt.
+  ensuring that the light theme tokens and animations are available throughout Zimbolt.
 */
