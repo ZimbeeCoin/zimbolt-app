@@ -6,7 +6,7 @@ interface FrameworkLinkProps {
   template: Template;
 }
 
-const FrameworkLink: React.FC<FrameworkLinkProps> = ({ template }) => {
+const FrameworkLink: React.FC<FrameworkLinkProps> = React.memo(({ template }) => {
   console.log('FrameworkLink render start');
   console.log('FrameworkLink render complete');
 
@@ -15,16 +15,16 @@ const FrameworkLink: React.FC<FrameworkLinkProps> = ({ template }) => {
       href={`/git?url=https://github.com/${template.githubRepo}.git`}
       data-state="closed"
       data-discover="true"
-      className="items-center justify-center "
+      className="items-center justify-center"
     >
       <div
         className={`inline-block ${template.icon} w-8 h-8 text-4xl transition-theme opacity-25 hover:opacity-75 transition-all`}
       />
     </a>
   );
-};
+});
 
-const StarterTemplates: React.FC = () => {
+const StarterTemplates: React.FC = React.memo(() => {
   console.log('StarterTemplates render start');
   console.log('StarterTemplates render complete');
 
@@ -40,6 +40,6 @@ const StarterTemplates: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default StarterTemplates;

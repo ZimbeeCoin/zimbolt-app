@@ -59,13 +59,11 @@ export function Chat() {
           </button>
         )}
         icon={({ type }) => {
-          switch (type) {
-            case 'success':
-              return <div className="i-ph:check-bold text-bolt-elements-icon-success text-2xl" />;
-            case 'error':
-              return <div className="i-ph:warning-circle-bold text-bolt-elements-icon-error text-2xl" />;
-          }
-          return undefined;
+          const icons = {
+            success: <div className="i-ph:check-bold text-bolt-elements-icon-success text-2xl" />,
+            error: <div className="i-ph:warning-circle-bold text-bolt-elements-icon-error text-2xl" />,
+          };
+          return icons[type as keyof typeof icons] || <div />;
         }}
         position="bottom-right"
         pauseOnFocusLoss
@@ -107,8 +105,12 @@ export const ChatImpl = memo(
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [animationScope, animate] = useAnimate();
+    const recognitionRef = useRef<SpeechRecognition | null>(null); // Ref for SpeechRecognition
 
-    const [chatStarted, setChatStarted] = useState(initialMessages.length > 0);
+    const [chatStarted, setChatStarted] = useState(() => {
+      chatStore.setKey('started', initialMessages.length > 0);
+      return initialMessages.length > 0;
+    });
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [imageDataList, setImageDataList] = useState<string[]>([]);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -131,7 +133,6 @@ export const ChatImpl = memo(
     const [modelList, setModelList] = useState<ModelInfo[]>([]);
     const [isModelSettingsCollapsed, setIsModelSettingsCollapsed] = useState(false);
     const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
     const [transcript, setTranscript] = useState('');
     const [isModelLoading, setIsModelLoading] = useState<string | undefined>('all');
 
@@ -167,8 +168,11 @@ export const ChatImpl = memo(
       console.log(transcript);
     }, [transcript]);
 
+    // Revised Speech Recognition useEffect
     useEffect(() => {
       if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        console.log('Speech recognition setup'); // Debugging log
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognitionInstance = new SpeechRecognition();
         recognitionInstance.continuous = true;
@@ -192,21 +196,31 @@ export const ChatImpl = memo(
           setIsListening(false);
         };
 
-        setRecognition(recognitionInstance);
-      }
-    }, [handleInputChange]);
+        recognitionRef.current = recognitionInstance;
 
-    // Use recognition for starting/stopping listening
+        // Cleanup on unmount
+        return () => {
+          if (recognitionRef.current) {
+            recognitionRef.current.stop();
+            recognitionRef.current = null;
+          }
+        };
+      }
+
+      return undefined;
+    }, []); // Empty dependency array: runs once on mount
+
+    // Use recognitionRef for starting/stopping listening
     const startListening = () => {
-      if (recognition) {
-        recognition.start();
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
         setIsListening(true);
       }
     };
 
     const stopListening = () => {
-      if (recognition) {
-        recognition.stop();
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
         setIsListening(false);
       }
     };
@@ -274,10 +288,6 @@ export const ChatImpl = memo(
     const { parsedMessages, parseMessages } = useMessageParser();
 
     const TEXTAREA_MAX_HEIGHT = chatStarted ? 400 : 200;
-
-    useEffect(() => {
-      chatStore.setKey('started', initialMessages.length > 0);
-    }, []);
 
     useEffect(() => {
       processSampledMessages({

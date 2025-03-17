@@ -438,10 +438,12 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           <IconButton
                             title="Model Settings"
                             className={classNames('transition-all flex items-center gap-1', {
-                              'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent':
-                                isModelSettingsCollapsed,
-                              'bg-bolt-elements-item-backgroundDefault text-bolt-elements-item-contentDefault':
-                                !isModelSettingsCollapsed,
+                              ...(typeof window !== 'undefined' && {
+                                'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent':
+                                  isModelSettingsCollapsed,
+                                'bg-bolt-elements-item-backgroundDefault text-bolt-elements-item-contentDefault':
+                                  !isModelSettingsCollapsed,
+                              }),
                             })}
                             onClick={() => setIsModelSettingsCollapsed?.(!isModelSettingsCollapsed)}
                             disabled={!providerList || providerList.length === 0}
@@ -454,7 +456,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           <div className="text-xs text-bolt-elements-textTertiary">
                             Use{' '}
                             <kbd className="kdb px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">Shift</kbd> +{' '}
-                            <kbd className="kdb px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">Return</kbd>{' '}
+                            <kbd className="kbd px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">Return</kbd>{' '}
                             a new line
                           </div>
                         ) : null}
