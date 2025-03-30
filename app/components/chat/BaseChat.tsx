@@ -382,7 +382,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                             handleSendMessage?.(event);
                           }
                         }}
-                        value={input} // Changed from `transcript` to `input` to allow typing
+                        value={input}
                         onChange={(event) => handleInputChange?.(event)}
                         onPaste={handlePaste}
                         style={{ minHeight: TEXTAREA_MIN_HEIGHT, maxHeight: TEXTAREA_MAX_HEIGHT }}
@@ -437,14 +437,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           {chatStarted && <ClientOnly>{() => <ExportChatButton exportChat={exportChat} />}</ClientOnly>}
                           <IconButton
                             title="Model Settings"
-                            className={classNames('transition-all flex items-center gap-1', {
-                              ...(typeof window !== 'undefined' && {
-                                'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent':
-                                  isModelSettingsCollapsed,
-                                'bg-bolt-elements-item-backgroundDefault text-bolt-elements-item-contentDefault':
-                                  !isModelSettingsCollapsed,
-                              }),
-                            })}
+                            className="transition-all flex items-center gap-1"
+                            isActive={isModelSettingsCollapsed}
                             onClick={() => setIsModelSettingsCollapsed?.(!isModelSettingsCollapsed)}
                             disabled={!providerList || providerList.length === 0}
                           >
